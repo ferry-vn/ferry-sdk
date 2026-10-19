@@ -1,0 +1,43 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.ferry-vn/ferry-mcp",
+  "title": "FerryVN",
+  "description": "Search Vietnam ferry voyages, seat maps and bookings on FerryVN; booking writes are opt-in.",
+  "repository": {
+    "url": "https://github.com/ferry-vn/ferry-sdk",
+    "source": "github",
+    "subfolder": "packages/mcp"
+  },
+  "version": "1.0.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "registryBaseUrl": "https://registry.npmjs.org",
+      "identifier": "@ferryvn/mcp",
+      "version": "1.0.0",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "FERRY_API_KEY",
+          "description": "Partner API key from the FerryVN dashboard",
+          "isRequired": true,
+          "isSecret": true
+        },
+        {
+          "name": "FERRY_ENV",
+          "description": "production (default) or uat",
+          "isRequired": false,
+          "default": "production"
+        },
+        {
+          "name": "FERRY_MCP_ENABLE_WRITES",
+          "description": "Set to true to expose create_customer, create_booking and request_cancellation",
+          "isRequired": false,
+          "default": "false"
+        }
+      ]
+    }
+  ]
+}

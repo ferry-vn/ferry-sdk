@@ -1,0 +1,191 @@
+name: Release
+
+# Push a tag `vX.Y.Z` (matching every package version, see `npm run version:set`)
+# to create a GitHub release with the Claude Desktop bundle (.mcpb) attached
+# and, once npm publishing is switched on, to publish @ferryvn/sdk,
+# @ferryvn/cli and @ferryvn/mcp to npm. A `-` in the version (1.1.0-rc.1)
+# makes a GitHub pre-release and publishes under the npm `next` tag.
+# Running the workflow by hand on a branch is a dry run (build and pack only),
+# unless `release_tag` is given: then the release is created from the selected
+# commit and the tag is created with it (for when you cannot push tags).
+#
+# npm publishing is off until the repository variable `NPM_PUBLISH` is `true`
+# (Settings → Secrets and variables → Actions → Variables). To publish a tag
+# that already has a GitHub release, set the variable and run this workflow by
+# hand on the tag: versions already on npm are skipped, the release notes are
+# refreshed and the bundle re-uploaded.
+#
+# One-time npm setup:
+#  1. Create the `ferryvn` organization on npmjs.com (the @ferryvn scope).
+#  2. First release: a granular access token with read-and-write access to
+#     @ferryvn packages (and "bypass 2FA" for automation) stored as the
+#     `NPM_TOKEN` secret of the `npm` environment (Settings → Environments).
+#  3. After the packages exist: configure npm trusted publishing (package
+#     settings → Trusted publisher → GitHub Actions, workflow `release.yml`,
+#     environment `npm`) for each package, then delete the token.
+
+on:
+  push:
+    tags: ['v*.*.*']
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Create this tag (vX.Y.Z) on the selected commit and release it; leave empty for a dry run
+        type: string
+        default: ''
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+
+  build:
+    needs: ci
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+
+      - name: Release tag
+        id: tag
+        env:
+          INPUT_TAG: ${{ inputs.release_tag }}
+        run: |
+          if [ "$GITHUB_REF_TYPE" = tag ]; then tag="$GITHUB_REF_NAME"; else tag="$INPUT_TAG"; fi
+          if [ -n "$tag" ] && ! [[ "$tag" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::release tag must look like v1.2.3 or v1.2.3-rc.1 (got \"$tag\")"
+            exit 1
+          fi
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
+
+      - name: Tag matches package versions
+        if: steps.tag.outputs.tag != ''
+        env:
+          TAG: ${{ steps.tag.outputs.tag }}
+        run: npm run version:check -- --tag "$TAG"
+
+      - run: npm run build
+
+      - name: Build Claude Desktop bundle (.mcpb)
+        run: npm run mcpb:pack
+
+      - name: Dry run (pack only)
+        if: steps.tag.outputs.tag == ''
+        run: for p in sdk cli mcp; do npm pack -w "packages/$p" --dry-run; done
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mcpb
+          path: packages/mcp/ferry-mcp.mcpb
+          if-no-files-found: error
+          retention-days: 7
+
+  npm:
+    needs: build
+    if: github.ref_type == 'tag' && vars.NPM_PUBLISH == 'true'
+    runs-on: ubuntu-latest
+    environment: npm
+    permissions:
+      contents: read
+      id-token: write # npm provenance / trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - run: npm ci
+
+      - run: npm run build
+
+      - name: Publish to npm (sdk → cli → mcp)
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # npm only attests provenance for public source repositories.
+          NPM_CONFIG_PROVENANCE: ${{ github.event.repository.visibility == 'public' }}
+        run: |
+          version=$(node -p "require('./packages/sdk/package.json').version")
+          tag=latest
+          case "$version" in *-*) tag=next ;; esac
+          for p in sdk cli mcp; do
+            name=$(node -p "require('./packages/$p/package.json').name")
+            if npm view "$name@$version" version >/dev/null 2>&1; then
+              echo "$name@$version already published — skipping"
+            else
+              npm publish -w "packages/$p" --access public --tag "$tag"
+            fi
+          done
+
+  github-release:
+    needs: [build, npm]
+    # Runs whether npm publishing ran or was switched off, never after a failed publish.
+    if: >-
+      !cancelled() && needs.build.result == 'success' && needs.build.outputs.tag != '' &&
+      (needs.npm.result == 'success' || needs.npm.result == 'skipped')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: mcpb
+          path: release-assets
+
+      - name: Create or update the GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ needs.build.outputs.tag }}
+          NPM_RESULT: ${{ needs.npm.result }}
+          NOT_ON_NPM: >-
+            > **The npm packages are not published yet.** The Claude Desktop bundle
+            (`ferry-mcp.mcpb`, below) is self-contained; the SDK, CLI and MCP server can be
+            built from source with `npm ci && npm run build`.
+        run: |
+          version="${TAG#v}"
+          notes=$(awk -v v="$version" '$0 ~ "^## \\[" v "\\]" {f=1; next} /^## \[/ {f=0} f' CHANGELOG.md)
+          if [ -z "$notes" ]; then
+            echo "CHANGELOG.md has no section for $version" >&2
+            exit 1
+          fi
+          if [ "$NPM_RESULT" != success ] && ! npm view "@ferryvn/sdk@$version" version >/dev/null 2>&1; then
+            notes=$(printf '%s\n\n%s' "$NOT_ON_NPM" "$notes")
+          fi
+          if [ "$GITHUB_REF_TYPE" = tag ]; then
+            from=(--verify-tag)
+          else
+            # Started by hand with release_tag: the tag must not exist yet (else run on the tag).
+            if gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$TAG" >/dev/null 2>&1; then
+              echo "::error::tag $TAG already exists: run this workflow on the tag instead"
+              exit 1
+            fi
+            from=(--target "$GITHUB_SHA")
+          fi
+          # Re-runnable: an existing release gets fresh notes and the bundle re-uploaded.
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" --notes "$notes"
+            gh release upload "$TAG" release-assets/ferry-mcp.mcpb --clobber
+            exit 0
+          fi
+          pre=()
+          case "$TAG" in *-*) pre=(--prerelease) ;; esac
+          gh release create "$TAG" --title "$TAG" --notes "$notes" "${pre[@]}" "${from[@]}" \
+            release-assets/ferry-mcp.mcpb

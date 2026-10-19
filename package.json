@@ -1,0 +1,51 @@
+{
+  "name": "ferry-sdk-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Typed SDK, CLI and MCP server for the FerryVN ferry-ticket platform API",
+  "license": "Apache-2.0",
+  "type": "module",
+  "workspaces": [
+    "packages/sdk",
+    "packages/cli",
+    "packages/mcp"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "openapi:extract": "tsx scripts/extract-openapi.ts",
+    "openapi:filter": "tsx scripts/filter-openapi.ts",
+    "generate": "npm run openapi:filter && npm run generate -w @ferryvn/sdk",
+    "generate:check": "npm run generate && git diff --exit-code -- openapi/sdk.json packages/sdk/src/generated",
+    "build": "npm run build -w @ferryvn/sdk && npm run build -w @ferryvn/cli && npm run build -w @ferryvn/mcp",
+    "typecheck": "tsc --noEmit -p tsconfig.json && npm run typecheck --workspaces",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:contract": "vitest run --config vitest.contract.config.ts",
+    "smoke:cli": "node packages/cli/dist/index.js --help",
+    "smoke:mcp": "node scripts/smoke-mcp.mjs && node scripts/smoke-mcp.mjs --writes && node scripts/smoke-mcp.mjs --http",
+    "smoke:sdk": "node scripts/smoke-sdk.mjs",
+    "pack:check": "node scripts/pack-check.mjs",
+    "version:set": "node scripts/version.mjs set",
+    "version:check": "node scripts/version.mjs check",
+    "mcpb:pack": "node scripts/pack-mcpb.mjs",
+    "verify": "npm run version:check && npm run lint && npm run typecheck && npm run test:coverage && npm run build && npm run smoke:cli && npm run smoke:mcp && npm run smoke:sdk && npm run pack:check"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.5",
+    "@biomejs/biome": "^2.5.15",
+    "@types/node": "^22.20.5",
+    "@vitest/coverage-v8": "^5.0.3",
+    "esbuild": "^0.27.2",
+    "openapi-typescript": "^7.13.0",
+    "publint": "^0.3.25",
+    "tsup": "^8.5.1",
+    "tsx": "^4.23.0",
+    "typescript": "~5.9.3",
+    "vitest": "^5.0.3"
+  }
+}

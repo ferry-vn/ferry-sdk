@@ -1,0 +1,33 @@
+name: Contract tests (UAT)
+
+# Read-only checks against the live UAT API to catch drift between the
+# backend and openapi/sdk.json. Skipped unless the FERRY_UAT_API_KEY secret
+# is configured.
+
+on:
+  schedule:
+    - cron: '17 20 * * *' # 03:17 Vietnam time
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    env:
+      FERRY_UAT_API_KEY: ${{ secrets.FERRY_UAT_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        if: env.FERRY_UAT_API_KEY != ''
+      - uses: actions/setup-node@v4
+        if: env.FERRY_UAT_API_KEY != ''
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+        if: env.FERRY_UAT_API_KEY != ''
+      - run: npm run test:contract
+        if: env.FERRY_UAT_API_KEY != ''
+      - run: echo "FERRY_UAT_API_KEY is not configured — contract tests skipped."
+        if: env.FERRY_UAT_API_KEY == ''

@@ -1,0 +1,1558 @@
+{
+  "components": {
+    "schemas": {
+      "AuthForgotPasswordDto": {
+        "properties": {
+          "email": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "email"
+        ],
+        "type": "object"
+      },
+      "BaseValidation": {
+        "properties": {
+          "max_length": {
+            "description": "Indicates the maximum length of the field.",
+            "example": 12,
+            "type": "number"
+          },
+          "min_length": {
+            "description": "Indicates the minimum length of the field.",
+            "example": 4,
+            "type": "number"
+          }
+        },
+        "required": [
+          "min_length",
+          "max_length"
+        ],
+        "type": "object"
+      },
+      "CursorInfinityPaginationRouteResponseDto": {
+        "properties": {
+          "data": {
+            "items": {
+              "$ref": "#/components/schemas/Route"
+            },
+            "type": "array"
+          },
+          "next_cursor": {
+            "example": "66b57bjj5ef8ashc71ca30jsv9c",
+            "nullable": true,
+            "type": "string"
+          },
+          "total": {
+            "nullable": true,
+            "type": "number"
+          }
+        },
+        "required": [
+          "data",
+          "next_cursor"
+        ],
+        "type": "object"
+      },
+      "FileType": {
+        "properties": {
+          "id": {
+            "example": "cbcfa8b8-3a25-4adb-a9c6-e325f0d0f3ae",
+            "type": "string"
+          },
+          "path": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "path"
+        ],
+        "type": "object"
+      },
+      "FilterRouteDto": {
+        "properties": {
+          "departure_id": {
+            "description": "Filter by departure location",
+            "type": "string"
+          },
+          "destination_id": {
+            "description": "Filter by destination location",
+            "type": "string"
+          },
+          "is_disable": {
+            "description": "Filter by disable status",
+            "type": "boolean"
+          },
+          "operator_ids": {
+            "description": "Filter by operator ID",
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "InputRules": {
+        "properties": {
+          "enable": {
+            "description": "Indicates if the field is shown.",
+            "example": true,
+            "type": "boolean"
+          },
+          "required": {
+            "description": "Indicates if the field is required.",
+            "example": false,
+            "type": "boolean"
+          },
+          "validation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/BaseValidation"
+              }
+            ],
+            "description": "Validation rules for the input field."
+          }
+        },
+        "required": [
+          "enable",
+          "required",
+          "validation"
+        ],
+        "type": "object"
+      },
+      "Location": {
+        "properties": {
+          "abbreviation": {
+            "description": "Abbreviation for the location name.",
+            "example": "HCM",
+            "type": "string"
+          },
+          "disable": {
+            "description": "Indicates if the location is disabled.",
+            "example": false,
+            "type": "boolean"
+          },
+          "id": {
+            "description": "Unique identifier for the location.",
+            "example": "location_12345",
+            "type": "string"
+          },
+          "is_root": {
+            "description": "Indicates if the location is the root (top-level) location.",
+            "example": true,
+            "type": "boolean"
+          },
+          "latitude": {
+            "description": "Latitude of the location.",
+            "example": 10.762622,
+            "type": "number"
+          },
+          "location_name": {
+            "description": "The name of the location.",
+            "example": "Ho Chi Minh City",
+            "type": "string"
+          },
+          "longitude": {
+            "description": "Longitude of the location.",
+            "example": 106.660172,
+            "type": "number"
+          },
+          "parent_id": {
+            "description": "Parent location identifier, can be null if it’s a root location.",
+            "example": "parent_location_54321",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "location_name",
+          "parent_id",
+          "is_root",
+          "abbreviation",
+          "disable",
+          "longitude",
+          "latitude"
+        ],
+        "type": "object"
+      },
+      "NoAuthBookingDetailDto": {
+        "properties": {
+          "booking_status": {
+            "description": "Booking status",
+            "enum": [
+              0,
+              2,
+              6,
+              8,
+              10,
+              12,
+              14,
+              16
+            ],
+            "example": 10,
+            "type": "number"
+          },
+          "depart_order": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoAuthOrderDetailDto"
+              }
+            ],
+            "description": "Departure order detail"
+          },
+          "id": {
+            "description": "Booking ID (order code)",
+            "example": "HU4GINUH",
+            "type": "string"
+          },
+          "orderer_name": {
+            "description": "Name of the person who placed the order",
+            "example": "Nguyen Van A",
+            "type": "string"
+          },
+          "payment_status": {
+            "description": "Booking payment status",
+            "enum": [
+              1,
+              3,
+              4,
+              5,
+              18,
+              30
+            ],
+            "example": 4,
+            "type": "number"
+          },
+          "return_order": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoAuthOrderDetailDto"
+              }
+            ],
+            "description": "Return order detail (null for one-way bookings)",
+            "nullable": true
+          },
+          "total_discount": {
+            "description": "Total discount of the booking",
+            "example": 0,
+            "type": "number"
+          },
+          "total_harbor_fee": {
+            "description": "Total harbor fee of the booking",
+            "example": 20000,
+            "type": "number"
+          },
+          "total_price": {
+            "description": "Total price paid for the booking",
+            "example": 720000,
+            "type": "number"
+          },
+          "total_ticket_price": {
+            "description": "Total ticket price of the booking",
+            "example": 700000,
+            "type": "number"
+          }
+        },
+        "required": [
+          "id",
+          "booking_status",
+          "payment_status",
+          "orderer_name",
+          "total_ticket_price",
+          "total_harbor_fee",
+          "total_discount",
+          "total_price",
+          "depart_order"
+        ],
+        "type": "object"
+      },
+      "NoAuthBookingDto": {
+        "properties": {
+          "depart_time": {
+            "description": "Departure time of the voyage in HH:mm format.",
+            "example": "08:30",
+            "type": "string"
+          },
+          "departure_date": {
+            "description": "Departure date of the voyage in YYYY-MM-DD format.",
+            "example": "2024-10-18",
+            "type": "string"
+          },
+          "departure_location_name": {
+            "description": "The name of the departure location.",
+            "example": "Ho Chi Minh City",
+            "type": "string"
+          },
+          "destination_location_name": {
+            "description": "The name of the destination location.",
+            "example": "Hon Son Island",
+            "type": "string"
+          },
+          "id": {
+            "description": "The booking ID",
+            "example": "CD9Z6WDB",
+            "type": "string"
+          },
+          "operator_name": {
+            "description": "Name of the operator.",
+            "example": "Super Ferry Co.",
+            "type": "string"
+          },
+          "orderer_name": {
+            "description": "Name of the person who placed the order",
+            "example": "John Doe",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "orderer_name",
+          "departure_location_name",
+          "destination_location_name",
+          "depart_time",
+          "departure_date",
+          "operator_name"
+        ],
+        "type": "object"
+      },
+      "NoAuthEInvoiceDetailDto": {
+        "properties": {
+          "lookupCode": {
+            "description": "Lookup code on the provider system",
+            "example": "AB12CD",
+            "nullable": true,
+            "type": "string"
+          },
+          "lookupUrl": {
+            "description": "Lookup URL on the provider system",
+            "example": "https://example.com/lookup/AB12CD",
+            "nullable": true,
+            "type": "string"
+          },
+          "pdfFile": {
+            "description": "PDF file URL stored on our system",
+            "example": "https://cdn.example.com/invoices/abc.pdf",
+            "nullable": true,
+            "type": "string"
+          },
+          "status": {
+            "description": "Status of the e-invoice",
+            "enum": [
+              "PENDING",
+              "ISSUED",
+              "FAILED",
+              "CANCELED"
+            ],
+            "example": "ISSUED",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "type": "object"
+      },
+      "NoAuthOrderDetailDto": {
+        "properties": {
+          "eInvoice": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoAuthEInvoiceDetailDto"
+              }
+            ],
+            "description": "E-invoice info (null if no invoice issued yet)",
+            "nullable": true
+          },
+          "id": {
+            "description": "Order ID",
+            "example": "CD9Z6WDB",
+            "type": "string"
+          },
+          "order_status": {
+            "description": "Order status",
+            "enum": [
+              0,
+              2,
+              4,
+              6,
+              8,
+              10,
+              14
+            ],
+            "example": 10,
+            "type": "number"
+          },
+          "ticket_count": {
+            "description": "Number of tickets in the order",
+            "example": 2,
+            "type": "number"
+          },
+          "tickets": {
+            "description": "List of tickets / passengers",
+            "items": {
+              "$ref": "#/components/schemas/NoAuthTicketDetailDto"
+            },
+            "type": "array"
+          },
+          "total_harbor_fee": {
+            "description": "Total harbor fee of the order",
+            "example": 20000,
+            "type": "number"
+          },
+          "total_price": {
+            "description": "Total price paid for the order",
+            "example": 720000,
+            "type": "number"
+          },
+          "total_ticket_price": {
+            "description": "Total ticket price of the order",
+            "example": 700000,
+            "type": "number"
+          },
+          "voyage": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoAuthVoyageDetailDto"
+              }
+            ],
+            "description": "Voyage info for the order"
+          }
+        },
+        "required": [
+          "id",
+          "order_status",
+          "ticket_count",
+          "total_ticket_price",
+          "total_harbor_fee",
+          "total_price",
+          "voyage",
+          "tickets"
+        ],
+        "type": "object"
+      },
+      "NoAuthRouteDetailDto": {
+        "properties": {
+          "departure_name": {
+            "description": "Departure point name",
+            "example": "Phu Quoc",
+            "type": "string"
+          },
+          "destination_name": {
+            "description": "Destination point name",
+            "example": "Rach Gia",
+            "type": "string"
+          }
+        },
+        "required": [
+          "departure_name",
+          "destination_name"
+        ],
+        "type": "object"
+      },
+      "NoAuthTicketDetailDto": {
+        "properties": {
+          "date_of_birth": {
+            "description": "Date of birth (YYYY-MM-DD)",
+            "example": "1990-01-01",
+            "type": "string"
+          },
+          "full_name": {
+            "description": "Full name of the passenger",
+            "example": "Nguyen Van A",
+            "type": "string"
+          },
+          "gender": {
+            "description": "Gender of the passenger",
+            "enum": [
+              1,
+              0
+            ],
+            "example": 1,
+            "type": "number"
+          },
+          "home_town": {
+            "description": "Home town / address of the passenger",
+            "example": "Quan 1, TP.HCM",
+            "type": "string"
+          },
+          "id": {
+            "description": "Ticket identifier",
+            "example": "TK-001",
+            "type": "string"
+          },
+          "nationality": {
+            "description": "Nationality display name",
+            "example": "Viet Nam",
+            "type": "string"
+          },
+          "payment_status": {
+            "description": "Ticket payment status (Pending=0, Paid=10, Refunded=20)",
+            "enum": [
+              0,
+              10,
+              20
+            ],
+            "example": 10,
+            "type": "number"
+          },
+          "price": {
+            "description": "Ticket price",
+            "example": 350000,
+            "type": "number"
+          },
+          "seat_number": {
+            "description": "Seat code on the boat layout",
+            "example": "1A",
+            "nullable": true,
+            "type": "string"
+          },
+          "social_id": {
+            "description": "Citizen ID or passport number",
+            "example": "079200001234",
+            "type": "string"
+          },
+          "status": {
+            "description": "Ticket status (Draft=0, Booked=10, Cancelled=20)",
+            "enum": [
+              0,
+              10,
+              20
+            ],
+            "example": 10,
+            "type": "number"
+          },
+          "ticket_class": {
+            "description": "Seat class code (e.g. ECO, VIP)",
+            "example": "ECO",
+            "type": "string"
+          },
+          "ticket_type": {
+            "description": "Ticket type — 0 child, 1 adult",
+            "example": 1,
+            "type": "number"
+          },
+          "vehicle_plate": {
+            "description": "Vehicle plate number (if applicable, null otherwise)",
+            "example": "30F-25658",
+            "nullable": true,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "full_name",
+          "gender",
+          "date_of_birth",
+          "social_id",
+          "home_town",
+          "nationality",
+          "ticket_type",
+          "ticket_class",
+          "price",
+          "status",
+          "payment_status"
+        ],
+        "type": "object"
+      },
+      "NoAuthVoyageDetailDto": {
+        "properties": {
+          "boat_icon": {
+            "description": "Boat / operator logo URL",
+            "example": "https://cdn.example.com/operators/superdong.png",
+            "nullable": true,
+            "type": "string"
+          },
+          "boat_name": {
+            "description": "Boat name",
+            "example": "Superdong 9",
+            "type": "string"
+          },
+          "depart_time": {
+            "description": "Departure time (HH:mm)",
+            "example": "08:30",
+            "type": "string"
+          },
+          "departure_date": {
+            "description": "Departure date (YYYY-MM-DD)",
+            "example": "2026-06-15",
+            "type": "string"
+          },
+          "operator_name": {
+            "description": "Operator display name",
+            "example": "Superdong Kien Giang",
+            "type": "string"
+          },
+          "route": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NoAuthRouteDetailDto"
+              }
+            ],
+            "description": "Route info (departure and destination names)"
+          }
+        },
+        "required": [
+          "departure_date",
+          "depart_time",
+          "boat_name",
+          "operator_name",
+          "route"
+        ],
+        "type": "object"
+      },
+      "Operator": {
+        "properties": {
+          "automation": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OperatorAutomation"
+              }
+            ],
+            "description": "The configuration for the operator automation."
+          },
+          "configs": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OperatorConfigs"
+              }
+            ],
+            "description": "Additional configurations for the operator."
+          },
+          "features": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/OperatorFeatures"
+              }
+            ],
+            "description": "The special features of the operator."
+          },
+          "id": {
+            "description": "Unique identifier for the operator.",
+            "example": "operator_12345",
+            "type": "string"
+          },
+          "is_enabled": {
+            "description": "Indicates if the operator is enabled.",
+            "example": true,
+            "type": "boolean"
+          },
+          "operator_code": {
+            "description": "Code for the operator, represented by an enum value.",
+            "enum": [
+              "phuquocexpress",
+              "mailinhexpress",
+              "hoabinhship",
+              "greenlines",
+              "superdong",
+              "lightning68",
+              "phuquyexpress",
+              "cangsaky",
+              "binhanhatien",
+              "thanhthoi",
+              "hangchautourist",
+              "chankhaluxury",
+              "saigonwatergo",
+              "unknown"
+            ],
+            "example": "phuquocexpress",
+            "type": "string"
+          },
+          "operator_logo": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/FileType"
+              }
+            ],
+            "description": "Logo of the operator, can be null.",
+            "example": "https://example.com/operator-logo.png",
+            "nullable": true
+          },
+          "operator_name": {
+            "description": "Name of the operator.",
+            "example": "Super Ferry Co.",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "operator_name",
+          "operator_code",
+          "operator_logo",
+          "configs",
+          "features",
+          "automation",
+          "is_enabled"
+        ],
+        "type": "object"
+      },
+      "OperatorAutomation": {
+        "properties": {
+          "boat_layouts": {
+            "description": "Indicates if the operator has boat layouts automation.",
+            "type": "boolean"
+          },
+          "create_order": {
+            "description": "Indicates if the operator has create order automation.",
+            "type": "boolean"
+          },
+          "issue_ticket": {
+            "description": "Indicates if the operator has issue ticket automation.",
+            "type": "boolean"
+          },
+          "voyages": {
+            "description": "Indicates if the operator has voyages automation.",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "voyages",
+          "boat_layouts",
+          "create_order",
+          "issue_ticket"
+        ],
+        "type": "object"
+      },
+      "OperatorConfigs": {
+        "properties": {
+          "issue_ticket_speed": {
+            "description": "The speed of issuing tickets for the operator.",
+            "enum": [
+              "InstantIssuance",
+              "FastIssuance",
+              "StandardIssuance",
+              "SlowIssuance"
+            ],
+            "example": "Instant Issuance",
+            "type": "string"
+          },
+          "max_vehicle_capacity": {
+            "description": "The maximum vehicle capacity for the operator.",
+            "example": 12,
+            "type": "number"
+          },
+          "max_vehicle_per_voyage": {
+            "description": "The maximum vehicle allowed to sent per voyage.",
+            "example": 2,
+            "type": "number"
+          },
+          "order_detail_url": {
+            "description": "The URL to the operator order detail page.",
+            "example": "https://example.com/order-detail/{order_id}",
+            "type": "string"
+          },
+          "passenger_inputs": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PassengerInputs"
+              }
+            ],
+            "description": "Passenger inputs for the operator."
+          }
+        },
+        "type": "object"
+      },
+      "OperatorFeatures": {
+        "properties": {
+          "change_passenger_info": {
+            "description": "Indicates if the operator supports change passenger info after issue ticket",
+            "example": false,
+            "type": "boolean"
+          },
+          "seri_ticket": {
+            "description": "Indicates if the operator supports seri ticket",
+            "example": false,
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "seri_ticket",
+          "change_passenger_info"
+        ],
+        "type": "object"
+      },
+      "OperatorNational": {
+        "properties": {
+          "abbrev": {
+            "description": "Abbreviation for the operator’s nationality.",
+            "example": "VN",
+            "type": "string"
+          },
+          "default": {
+            "description": "Indicates if this nationality is the default.",
+            "example": true,
+            "type": "boolean"
+          },
+          "name": {
+            "description": "Name of the operator’s nationality.",
+            "example": "Vietnam",
+            "type": "string"
+          },
+          "national_id": {
+            "description": "Unique national identifier for the operator, can be a string or a number.",
+            "example": "123456",
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              }
+            ]
+          }
+        },
+        "required": [
+          "national_id",
+          "name",
+          "abbrev",
+          "default"
+        ],
+        "type": "object"
+      },
+      "OperatorRoute": {
+        "properties": {
+          "departure_address": {
+            "description": "Departure address for the route.",
+            "example": "123 Main St, Departure City",
+            "type": "string"
+          },
+          "departure_address_url": {
+            "description": "Link to departure address on map.",
+            "example": "https://goo.gl/maps/departure_address",
+            "type": "string"
+          },
+          "departure_harbor_fee": {
+            "description": "Harbor fee of the departure. Unit: VND",
+            "example": 10000,
+            "type": "number"
+          },
+          "departure_lat": {
+            "description": "Latitude of the departure point.",
+            "example": 10.045162,
+            "nullable": true,
+            "type": "number"
+          },
+          "departure_lng": {
+            "description": "Longitude of the departure point.",
+            "example": 104.013779,
+            "nullable": true,
+            "type": "number"
+          },
+          "destination_address": {
+            "description": "Destination address for the route.",
+            "example": "456 Destination Ave, Destination City",
+            "type": "string"
+          },
+          "destination_address_url": {
+            "description": "Link to destination address on map.",
+            "example": "https://goo.gl/maps/destination_address",
+            "type": "string"
+          },
+          "destination_harbor_fee": {
+            "description": "Harbor fee of the destination. Unit: VND",
+            "example": 10000,
+            "type": "number"
+          },
+          "destination_lat": {
+            "description": "Latitude of the destination point.",
+            "example": 10.2183,
+            "nullable": true,
+            "type": "number"
+          },
+          "destination_lng": {
+            "description": "Longitude of the destination point.",
+            "example": 103.9647,
+            "nullable": true,
+            "type": "number"
+          },
+          "estimate_travel_time": {
+            "description": "Estimated travel time in the format: \"1m\", \"30m\", \"1h\", etc.",
+            "example": "1h30m",
+            "type": "string"
+          },
+          "harbor_fee": {
+            "description": "Total harbor fee associated with the route. Unit: VND",
+            "example": 10000,
+            "type": "number"
+          },
+          "operator": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/Operator"
+              }
+            ],
+            "description": "Details of the operator. Can be null if not available.",
+            "nullable": true
+          },
+          "operator_id": {
+            "description": "Unique identifier for the operator.",
+            "example": "operator_12345",
+            "type": "string"
+          },
+          "route_code": {
+            "description": "Code associated with the route for the operator.",
+            "example": "OPRT-ROUTE-001",
+            "type": "string"
+          },
+          "route_id": {
+            "description": "Unique identifier for the route.",
+            "example": "route_54321",
+            "type": "string"
+          }
+        },
+        "required": [
+          "operator_id",
+          "operator",
+          "route_id",
+          "route_code",
+          "harbor_fee",
+          "departure_harbor_fee",
+          "destination_harbor_fee",
+          "departure_address",
+          "destination_address",
+          "estimate_travel_time",
+          "departure_address_url",
+          "destination_address_url",
+          "departure_lat",
+          "departure_lng",
+          "destination_lat",
+          "destination_lng"
+        ],
+        "type": "object"
+      },
+      "PartialTypeClass": {
+        "properties": {
+          "boat_layouts": {
+            "description": "Indicates if the operator has boat layouts automation.",
+            "type": "boolean"
+          },
+          "create_order": {
+            "description": "Indicates if the operator has create order automation.",
+            "type": "boolean"
+          },
+          "issue_ticket": {
+            "description": "Indicates if the operator has issue ticket automation.",
+            "type": "boolean"
+          },
+          "voyages": {
+            "description": "Indicates if the operator has voyages automation.",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "PassengerInputs": {
+        "properties": {
+          "address": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the address input field."
+          },
+          "date_of_birth": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the date of birth input field."
+          },
+          "email": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the email input field."
+          },
+          "full_name": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the full name input field."
+          },
+          "gender": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the gender input field."
+          },
+          "national_abbrev": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the nationality input field."
+          },
+          "passport_expired_at": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the passport expiry date input field."
+          },
+          "phone_number": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the phone number input field."
+          },
+          "plate_number": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the plate number input field."
+          },
+          "social_id": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/InputRules"
+              }
+            ],
+            "description": "The rules for the social id input field."
+          }
+        },
+        "required": [
+          "full_name",
+          "date_of_birth",
+          "social_id",
+          "email",
+          "phone_number",
+          "address",
+          "national_abbrev",
+          "gender",
+          "plate_number",
+          "passport_expired_at"
+        ],
+        "type": "object"
+      },
+      "PublicFilterOperatorDto": {
+        "properties": {
+          "code": {
+            "description": "The code of the operator to filter by",
+            "example": "greenlines",
+            "type": "string"
+          },
+          "features": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/PartialTypeClass"
+              }
+            ],
+            "description": "The special features of the operator",
+            "example": {
+              "change_passenger_info": true,
+              "seri_ticket": true
+            }
+          },
+          "is_enabled": {
+            "description": "Whether the operator is enabled or not",
+            "example": true,
+            "type": "boolean"
+          },
+          "issue_ticket_speed": {
+            "description": "The speed of issuing tickets for the operator",
+            "enum": [
+              "InstantIssuance",
+              "FastIssuance",
+              "StandardIssuance",
+              "SlowIssuance"
+            ],
+            "example": "InstantIssuance",
+            "type": "string"
+          },
+          "name": {
+            "description": "The name of the operator to filter by",
+            "example": "Phu Quoc",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Route": {
+        "properties": {
+          "departure_abbreviation": {
+            "description": "Abbreviation of the departure location.",
+            "example": "can-tho",
+            "type": "string"
+          },
+          "departure_id": {
+            "description": "Identifier for the departure location.",
+            "example": "departure_12345",
+            "type": "string"
+          },
+          "departure_name": {
+            "description": "Name of the departure location.",
+            "example": "Can Tho",
+            "type": "string"
+          },
+          "destination_abbreviation": {
+            "description": "Abbreviation of the destination location.",
+            "example": "can-tho",
+            "type": "string"
+          },
+          "destination_id": {
+            "description": "Identifier for the destination location.",
+            "example": "destination_54321",
+            "type": "string"
+          },
+          "destination_name": {
+            "description": "Name of the destination location.",
+            "example": "Can Tho",
+            "type": "string"
+          },
+          "disable": {
+            "description": "Indicates if the route is disabled.",
+            "example": false,
+            "type": "boolean"
+          },
+          "id": {
+            "description": "Unique identifier for the route.",
+            "example": 1,
+            "type": "number"
+          },
+          "isVietnameseOnly": {
+            "description": "Indicates if the route is only for Vietnamese.",
+            "example": false,
+            "type": "boolean"
+          },
+          "operators": {
+            "description": "List of operators servicing this route.",
+            "items": {
+              "$ref": "#/components/schemas/OperatorRoute"
+            },
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "departure_id",
+          "departure_name",
+          "departure_abbreviation",
+          "destination_id",
+          "destination_name",
+          "destination_abbreviation",
+          "disable",
+          "isVietnameseOnly"
+        ],
+        "type": "object"
+      },
+      "SortLocationDto": {
+        "properties": {
+          "order": {
+            "description": "Sort order. Available options: \"asc\" = Ascending, \"desc\" = Descending",
+            "example": "asc",
+            "type": "string"
+          },
+          "orderBy": {
+            "description": "Field to sort",
+            "example": "location_name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "orderBy",
+          "order"
+        ],
+        "type": "object"
+      },
+      "SortOperatorDto": {
+        "properties": {
+          "order": {
+            "type": "string"
+          },
+          "orderBy": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "orderBy",
+          "order"
+        ],
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "apiKey": {
+        "description": "Partner API key (created in the dashboard, internal tier `/internal/api-keys`). Sent as `Authorization: Bearer <API_KEY_PREFIX><keyId>_<secret>`. Validated by the `bearer-header` passport strategy (passport-http-bearer).",
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "contact": {},
+    "description": "API docs of Ferry Ticket",
+    "title": "Ferry Ticket API (public, anonymous)",
+    "version": "3.2.16",
+    "x-generated-by": "ferry-sdk/scripts/extract-openapi.ts"
+  },
+  "openapi": "3.0.0",
+  "paths": {
+    "/api/v1/auth/password/forgot": {
+      "post": {
+        "description": "Send a forgot password email",
+        "operationId": "PublicAuthController_forgotPassword_v1",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthForgotPasswordDto"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": ""
+          }
+        },
+        "summary": "Forgot password",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api/v1/bookings/public/{id}": {
+      "get": {
+        "operationId": "PublicBookingController_findBookingById_v1",
+        "parameters": [
+          {
+            "description": "ID of booking",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoAuthBookingDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "Get public data of a booking. Can get data of any booking on the system.",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/api/v1/bookings/public/{id}/detail": {
+      "get": {
+        "operationId": "PublicBookingController_findBookingDetailById_v1",
+        "parameters": [
+          {
+            "description": "Order code of the booking (e.g. HU4GINUH)",
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/NoAuthBookingDetailDto"
+                }
+              }
+            },
+            "description": ""
+          }
+        },
+        "summary": "Get full public detail of a booking for QR ticket lookup. No auth required. Throttled at 60 req/60s/IP to mitigate enumeration on the order code.",
+        "tags": [
+          "Bookings"
+        ]
+      }
+    },
+    "/api/v1/locations": {
+      "get": {
+        "operationId": "PublicLocationController_findAll_v1",
+        "parameters": [
+          {
+            "description": "Sort options for the query, Available options: [Check Model](#model/sortlocationdto)",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "example": "[{\"orderBy\": \"location_name\", \"order\": \"asc\"}]",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Dynamic filters as JSON array. Example: \"[{\"field\":\"location_name\",\"op\":\"contains\",\"value\":\"North\"}]\"",
+            "in": "query",
+            "name": "dynamicFilters",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Location"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Return all locations"
+          }
+        },
+        "summary": "Get all locations",
+        "tags": [
+          "Location"
+        ]
+      }
+    },
+    "/api/v1/operators": {
+      "get": {
+        "operationId": "PublicOperatorsController_findAll_v1",
+        "parameters": [
+          {
+            "description": "Sort options for the query, Available options: [Check Model](#model/sortoperatordto)",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "example": "[{\"orderBy\": \"createdAt\", \"order\": \"desc\"}]",
+              "type": "string"
+            }
+          },
+          {
+            "description": "filters options for the query, Available options: [Check Model](#model/publicfilteroperatordto)",
+            "in": "query",
+            "name": "filters",
+            "required": false,
+            "schema": {
+              "example": "{\"name\":\"Phu Quoc\",\"code\":\"greenlines\",\"is_enabled\":true,\"issue_ticket_speed\":\"InstantIssuance\",\"features\":{\"seri_ticket\":true,\"change_passenger_info\":true}}",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/Operator"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Return all operators"
+          }
+        },
+        "summary": "Get operators",
+        "tags": [
+          "Operator"
+        ]
+      }
+    },
+    "/api/v1/operators/nationals/{id}": {
+      "get": {
+        "operationId": "PublicOperatorsController_getNationals_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OperatorNational"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Return all operator nationalities"
+          }
+        },
+        "summary": "Get operator nationalities",
+        "tags": [
+          "Operator"
+        ]
+      }
+    },
+    "/api/v1/payments/sms-banking/ipn/{access_code}": {
+      "get": {
+        "operationId": "PublicSMSBankingPaymentsController_receivePayment_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "access_code",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "[Banking] Receive IPN from Partners.",
+        "tags": [
+          "Payment"
+        ]
+      }
+    },
+    "/api/v1/routes": {
+      "get": {
+        "operationId": "PublicRouteController_findAll_v1",
+        "parameters": [
+          {
+            "description": "Sort options for the query. Example: \"name:asc,duration_minutes:desc\"",
+            "in": "query",
+            "name": "sort",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Dynamic filters as JSON array. Example: \"[{\"field\":\"name\",\"op\":\"contains\",\"value\":\"ABC\"}]\"",
+            "in": "query",
+            "name": "dynamicFilters",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Page cursor for pagination",
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "description": "Number of items to return. Max: 100. Default: 50",
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "description": "Filter options for the query, Available options: [Check Model](#model/filterroutedto)",
+            "in": "query",
+            "name": "filters",
+            "required": false,
+            "schema": {
+              "example": "{\"operator_ids\":[\"1\",\"2\"],\"departure_id\":\"1\",\"destination_id\":\"2\",\"is_disable\":false}",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CursorInfinityPaginationRouteResponseDto"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "summary": "Get all routes with cursor pagination",
+        "tags": [
+          "Route"
+        ],
+        "x-ferry-sdk-patch": "Decorator declares a single Route; handler returns routeService.findAllWithCursorPagination() = { data: Route[], next_cursor }."
+      }
+    },
+    "/api/v1/routes/{id}": {
+      "get": {
+        "operationId": "PublicRouteController_findOne_v1",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Route"
+                }
+              }
+            },
+            "description": "The record has been successfully retrieved."
+          }
+        },
+        "summary": "Get a route by ID",
+        "tags": [
+          "Route"
+        ]
+      }
+    }
+  },
+  "servers": [
+    {
+      "description": "Production",
+      "url": "https://api.ferry.vn"
+    },
+    {
+      "description": "UAT",
+      "url": "https://api.ferryvn.net"
+    }
+  ],
+  "tags": []
+}

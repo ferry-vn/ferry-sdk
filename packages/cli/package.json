@@ -1,0 +1,47 @@
+{
+  "name": "@ferryvn/cli",
+  "version": "1.0.0",
+  "description": "Official `ferry` command-line tool for the FerryVN ferry-ticket partner API",
+  "license": "Apache-2.0",
+  "author": "KDIGI",
+  "homepage": "https://github.com/ferry-vn/ferry-sdk/tree/main/packages/cli#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ferry-vn/ferry-sdk.git",
+    "directory": "packages/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/ferry-vn/ferry-sdk/issues"
+  },
+  "keywords": [
+    "ferryvn",
+    "ferry",
+    "vietnam",
+    "ferry-ticket",
+    "cli"
+  ],
+  "type": "module",
+  "bin": {
+    "ferry": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ferryvn/sdk": "1.0.0",
+    "commander": "^15.0.0"
+  }
+}

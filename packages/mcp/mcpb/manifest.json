@@ -1,0 +1,92 @@
+{
+  "manifest_version": "0.3",
+  "name": "ferryvn",
+  "display_name": "FerryVN",
+  "version": "1.0.0",
+  "description": "Search Vietnam high-speed ferry voyages, seat maps, customers and bookings on FerryVN; booking writes are opt-in.",
+  "long_description": "Official FerryVN MCP server. Read tools: locations, routes, voyages, voyage calendar, seat maps with prices and age-based ticket types, customers, bookings, cancellation requests, disruptions, account balance, vouchers. Optional write tools (create customer, create booking, request cancellation) always ask you to confirm. Payments and ticket issuance are never exposed.",
+  "author": {
+    "name": "KDIGI",
+    "url": "https://github.com/kdigivn"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ferry-vn/ferry-sdk"
+  },
+  "homepage": "https://github.com/ferry-vn/ferry-sdk/tree/main/packages/mcp",
+  "license": "Apache-2.0",
+  "keywords": ["ferry", "vietnam", "booking", "travel"],
+  "server": {
+    "type": "node",
+    "entry_point": "server/index.cjs",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/server/index.cjs"],
+      "env": {
+        "FERRY_API_KEY": "${user_config.api_key}",
+        "FERRY_ENV": "${user_config.environment}",
+        "FERRY_MCP_ENABLE_WRITES": "${user_config.enable_writes}"
+      }
+    }
+  },
+  "user_config": {
+    "api_key": {
+      "type": "string",
+      "title": "FerryVN API key",
+      "description": "Partner API key from the FerryVN dashboard (Settings → API keys).",
+      "sensitive": true,
+      "required": true
+    },
+    "environment": {
+      "type": "string",
+      "title": "Environment",
+      "description": "production or uat",
+      "default": "production",
+      "required": false
+    },
+    "enable_writes": {
+      "type": "boolean",
+      "title": "Allow creating customers, bookings and cancellation requests",
+      "description": "Off by default. Every write still asks for your confirmation; payments and ticket issuance are never available.",
+      "default": false,
+      "required": false
+    }
+  },
+  "tools": [
+    { "name": "search_locations", "description": "Find ports and islands" },
+    { "name": "list_routes", "description": "Routes and operators" },
+    { "name": "search_voyages", "description": "Voyages between two locations on a date" },
+    { "name": "get_voyage_calendar", "description": "Voyages per day" },
+    { "name": "get_route_prices", "description": "Selling prices of a route per voyage, seat type and ticket type" },
+    { "name": "get_seat_map", "description": "Free seats by seat type, prices, harbor fee and ticket types" },
+    { "name": "quote_booking", "description": "Validate and price a booking without creating it" },
+    { "name": "find_customers", "description": "Search customers" },
+    { "name": "get_booking", "description": "One booking with orders and tickets" },
+    { "name": "list_bookings", "description": "Bookings with filters" },
+    { "name": "list_cancel_requests", "description": "Cancellation requests" },
+    { "name": "get_disruptions", "description": "Delays and cancellations" },
+    { "name": "get_account", "description": "Organization balances and credit" },
+    { "name": "list_vouchers", "description": "Voucher codes" },
+    { "name": "create_customer", "description": "Add a customer (opt-in write)" },
+    { "name": "create_booking", "description": "Create a booking (opt-in write)" },
+    { "name": "request_cancellation", "description": "Request ticket cancellation (opt-in write)" }
+  ],
+  "prompts": [
+    {
+      "name": "plan_ferry_trip",
+      "description": "Plan a ferry trip",
+      "arguments": ["from", "to", "date", "passengers"],
+      "text": "Plan a ferry trip from ${arguments.from} to ${arguments.to} on ${arguments.date} for ${arguments.passengers}."
+    },
+    {
+      "name": "check_booking",
+      "description": "Explain a booking",
+      "arguments": ["booking_id"],
+      "text": "Check booking ${arguments.booking_id}."
+    }
+  ],
+  "compatibility": {
+    "platforms": ["darwin", "win32", "linux"],
+    "runtimes": { "node": ">=22.12.0" }
+  }
+}

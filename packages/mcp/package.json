@@ -1,0 +1,60 @@
+{
+  "name": "@ferryvn/mcp",
+  "version": "1.0.0",
+  "description": "Official Model Context Protocol server that lets AI agents search FerryVN ferry voyages, seat maps and bookings (writes are opt-in)",
+  "license": "Apache-2.0",
+  "author": "KDIGI",
+  "homepage": "https://github.com/ferry-vn/ferry-sdk/tree/main/packages/mcp#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ferry-vn/ferry-sdk.git",
+    "directory": "packages/mcp"
+  },
+  "bugs": {
+    "url": "https://github.com/ferry-vn/ferry-sdk/issues"
+  },
+  "keywords": [
+    "ferryvn",
+    "ferry",
+    "vietnam",
+    "mcp",
+    "model-context-protocol",
+    "ai-agent",
+    "claude"
+  ],
+  "mcpName": "io.github.ferry-vn/ferry-mcp",
+  "type": "module",
+  "bin": {
+    "ferry-mcp": "./dist/index.js"
+  },
+  "main": "./dist/server.js",
+  "types": "./dist/server.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/server.d.ts",
+      "default": "./dist/server.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "NOTICE"
+  ],
+  "engines": {
+    "node": ">=22.12"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@ferryvn/sdk": "1.0.0",
+    "@modelcontextprotocol/sdk": "^1.32.1",
+    "zod": "^4.6.5"
+  }
+}

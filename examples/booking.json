@@ -1,0 +1,34 @@
+{
+  "customer_id": 1001,
+  "orderer_name": "Nguyễn Văn A",
+  "contact_email": "orderer@example.com",
+  "phone_number": "0901234567",
+  "depart_order": {
+    "voyage_id": "<voyage_id from `ferry voyages search`>",
+    "customer_id": 1001,
+    "orderer_name": "Nguyễn Văn A",
+    "contact_email": "orderer@example.com",
+    "vouchers": [],
+    "tickets": [
+      {
+        "name": "Nguyen Van A",
+        "date_of_birth": "1990-01-01",
+        "social_id": "079090000001",
+        "national_id": "1",
+        "home_town": "Cần Thơ",
+        "gender": 1,
+        "plate_number": null,
+        "is_child": false,
+        "is_vip": false,
+        "seat_id": "<seat_id from `ferry seats`>",
+        "seat_name": "A1",
+        "position_id": "<position_id from `ferry seats`>",
+        "floor_id": "<floor id from `ferry seats --json`>",
+        "sort_auto": 1,
+        "seat_type_code": "<seat type, must match the price row>",
+        "ticket_type_id": 1,
+        "ticket_price_id": 5
+      }
+    ]
+  }
+}
