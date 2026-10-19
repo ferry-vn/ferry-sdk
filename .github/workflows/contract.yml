@@ -18,7 +18,7 @@ jobs:
     env:
       FERRY_UAT_API_KEY: ${{ secrets.FERRY_UAT_API_KEY }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         if: env.FERRY_UAT_API_KEY != ''
       - uses: actions/setup-node@v4
         if: env.FERRY_UAT_API_KEY != ''
