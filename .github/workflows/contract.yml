@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         if: env.FERRY_UAT_API_KEY != ''
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: env.FERRY_UAT_API_KEY != ''
         with:
           node-version: 24
