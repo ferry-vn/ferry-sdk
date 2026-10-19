@@ -87,7 +87,7 @@ jobs:
         if: steps.tag.outputs.tag == ''
         run: for p in sdk cli mcp; do npm pack -w "packages/$p" --dry-run; done
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: mcpb
           path: packages/mcp/ferry-mcp.mcpb
