@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Official typed, zero-dependency TypeScript client for the FerryVN ferry-ticket partner API (Node.js, Bun, Deno, edge runtimes)",
   "license": "Apache-2.0",
-  "author": "KDIGI",
+  "author": "Ferry VN JSC <hi@ferry.vn> (https://ferry.vn)",
   "homepage": "https://github.com/ferry-vn/ferry-sdk/tree/main/packages/sdk#readme",
   "repository": {
     "type": "git",

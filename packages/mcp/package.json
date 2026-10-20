@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Official Model Context Protocol server that lets AI agents search FerryVN ferry voyages, seat maps and bookings (writes are opt-in)",
   "license": "Apache-2.0",
-  "author": "KDIGI",
+  "author": "Ferry VN JSC <hi@ferry.vn> (https://ferry.vn)",
   "homepage": "https://github.com/ferry-vn/ferry-sdk/tree/main/packages/mcp#readme",
   "repository": {
     "type": "git",

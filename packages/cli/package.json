@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Official `ferry` command-line tool for the FerryVN ferry-ticket partner API",
   "license": "Apache-2.0",
-  "author": "KDIGI",
+  "author": "Ferry VN JSC <hi@ferry.vn> (https://ferry.vn)",
   "homepage": "https://github.com/ferry-vn/ferry-sdk/tree/main/packages/cli#readme",
   "repository": {
     "type": "git",

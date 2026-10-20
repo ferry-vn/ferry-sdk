@@ -6,8 +6,9 @@
   "description": "Search Vietnam high-speed ferry voyages, seat maps, customers and bookings on FerryVN; booking writes are opt-in.",
   "long_description": "Official FerryVN MCP server. Read tools: locations, routes, voyages, voyage calendar, seat maps with prices and age-based ticket types, customers, bookings, cancellation requests, disruptions, account balance, vouchers. Optional write tools (create customer, create booking, request cancellation) always ask you to confirm. Payments and ticket issuance are never exposed.",
   "author": {
-    "name": "KDIGI",
-    "url": "https://github.com/kdigivn"
+    "name": "Ferry VN JSC",
+    "email": "hi@ferry.vn",
+    "url": "https://ferry.vn"
   },
   "repository": {
     "type": "git",
