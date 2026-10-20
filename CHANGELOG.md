@@ -4,6 +4,11 @@ All notable changes to this repository are documented here. Format: [Keep a Chan
 
 ## [Unreleased]
 
+### Changed
+
+- Copyright holder is now Ferry VN JSC: `NOTICE` files, the packages' `author` field and the Claude Desktop bundle's author.
+- The README is rewritten for integrators (API keys, environments, what moves money, links to [docs.ferry.vn/developers](https://docs.ferry.vn/developers/)); the development scripts and the release process moved to `CONTRIBUTING.md`.
+
 ## [1.0.0] - 2026-10-19
 
 First public release: `@ferryvn/sdk`, `@ferryvn/cli` and `@ferryvn/mcp` under Apache-2.0. Every endpoint and response shape was re-verified against backend v3.2.16. That includes `api_key` permissions, real response bodies, error shapes, rate limits and webhooks.

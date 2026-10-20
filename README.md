@@ -1,48 +1,28 @@
-# FerryVN SDK · CLI · MCP
+# Ferry VN SDK · CLI · MCP
 
-Official TypeScript SDK, command-line tool and MCP server for the **FerryVN** ferry-ticket platform API (partner tier).
+[![CI](https://github.com/ferry-vn/ferry-sdk/actions/workflows/ci.yml/badge.svg)](https://github.com/ferry-vn/ferry-sdk/actions/workflows/ci.yml)
+[![License: Apache-2.0](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
-| Package | | |
+Official TypeScript SDK, command-line tool and MCP server for the [Ferry VN](https://ferry.vn) partner API. Travel agencies, OTAs, internal staff and AI agents use them to search voyages across Vietnam's ferry operators, read seat maps and prices, and create and manage bookings.
+
+| Package | Install | What it is |
 |---|---|---|
-| [`@ferryvn/sdk`](packages/sdk) | `npm i @ferryvn/sdk` | Zero-dependency `fetch` client (Node ≥ 20, Bun, Deno, edge), typed from the real API, booking builder, webhooks helpers |
-| [`@ferryvn/cli`](packages/cli) | `npm i -g @ferryvn/cli` | `ferry`: voyages, seat maps, bookings from a spreadsheet, customers, cancellations; table/JSON/CSV output |
-| [`@ferryvn/mcp`](packages/mcp) | `npx -y @ferryvn/mcp` | MCP server (`ferry-mcp`) for Claude and other AI agents; read-only by default, confirmed writes are opt-in |
+| [`@ferryvn/sdk`](packages/sdk) | `npm i @ferryvn/sdk` | Zero-dependency `fetch` client (Node ≥ 20, Bun, Deno, edge runtimes; ESM + CJS), typed from the real API, with a booking builder and webhook helpers |
+| [`@ferryvn/cli`](packages/cli) | `npm i -g @ferryvn/cli` | `ferry`: voyages, prices, seat maps, bookings from a spreadsheet, customers, cancellations; table / JSON / CSV output |
+| [`@ferryvn/mcp`](packages/mcp) | `npx -y @ferryvn/mcp` | `ferry-mcp`: MCP server for Claude and other AI agents; read-only by default, writes are opt-in and confirmed |
 
-Licensed under [Apache-2.0](LICENSE).
+> **Status:** v1.0.0 is on [GitHub Releases](https://github.com/ferry-vn/ferry-sdk/releases). The npm packages are not published yet. Until they are, use the self-contained Claude Desktop bundle (`ferry-mcp.mcpb`) from the release, or build from source with `npm ci && npm run build`.
 
----
+**Documentation:** [docs.ferry.vn/developers](https://docs.ferry.vn/developers/) (integration guide, in Vietnamese) · [api.ferry.vn/docs](https://api.ferry.vn/docs) (API reference) · package references: [SDK](packages/sdk/README.md) · [CLI](packages/cli/README.md) · [MCP](packages/mcp/README.md)
 
-## Tiếng Việt
+## Before you start
 
-Bộ công cụ chính thức cho đối tác (đại lý, OTA), nhân viên nội bộ và AI agent làm việc với API bán vé tàu cao tốc FerryVN.
-
-- **SDK** (`@ferryvn/sdk`): client TypeScript cho API tier đối tác (`/api/v1/...`).
-  - Xác thực bằng API key qua header `Authorization: Bearer <key>`. Key do admin tổ chức tạo trong dashboard.
-  - Có timeout, tự retry riêng cho GET, lỗi có kiểu kèm mã lỗi nghiệp vụ (`FerryErrorCode`) và `x-request-id` để tra log.
-  - **Booking builder**: chỉ cần mã chuyến, tên ghế và thông tin hành khách. SDK tự chọn loại vé theo tuổi (người lớn / trẻ em / người cao tuổi, theo luật của từng hãng), khớp giá và kiểm ghế trống, CCCD trùng, *trước khi* gửi.
-- **CLI** (`ferry`):
-  - Ví dụ: `ferry voyages search --from "Rạch Giá" --to "Phú Quốc" --date tomorrow`, `ferry seats <voyageId>`, `ferry customers --search 0901234567`.
-  - `ferry booking draft ... --passengers khach.csv` đọc danh sách hành khách từ file CSV (từ Excel: Save As → "CSV UTF-8") hoặc JSON.
-  - `ferry booking list --output csv > don.csv` xuất danh sách cho kế toán.
-  - Hỗ trợ nhiều profile (production / UAT).
-- **MCP** (`ferry-mcp`): cho Claude Desktop / Claude Code tra cứu tuyến, chuyến, lịch chuyến, sơ đồ ghế, khách hàng, đơn hàng, sự cố thời tiết.
-  - Công cụ ghi (tạo khách hàng, tạo đơn, yêu cầu huỷ) **chỉ bật khi** `FERRY_MCP_ENABLE_WRITES=true`.
-  - Mỗi lần ghi đều phải được người dùng xác nhận, có hạn mức số lần ghi và audit log.
-  - **Không bao giờ** có xuất vé / thanh toán / rút tiền / điều chỉnh số dư / quản trị tổ chức.
-
-Lưu ý quan trọng (đã kiểm chứng trong mã backend):
-
-- **Tạo booking:** **không** trừ tiền, **không** giữ ghế.
-- **Xuất vé (`confirmToIssue`):**
-  - Trừ số dư và hạn mức của tổ chức; phần khách thiếu được ghi nợ (`PaidWithDebt`).
-  - Với hãng tự động có thể mất vài phút.
-  - CLI yêu cầu xác nhận; MCP không hỗ trợ.
-- **Không có idempotency key:** backend không hỗ trợ ⇒ SDK không bao giờ tự retry POST. Nếu lỗi mạng, kiểm tra `booking list` trước khi gửi lại.
-- **Webhook:** backend **không ký** và chỉ gửi **một lần**. Đặt token bí mật trong URL và đối soát định kỳ bằng API.
-
----
+- **API key.** An organization admin creates it in the Ferry VN dashboard. It is shown once, never expires, and carries organization-admin power: keep it server-side. The SDK refuses to run with a key in a browser unless you opt in.
+- **Environments.** `production` (`https://api.ferry.vn`, the default) and `uat` for integration testing. **UAT is not a sandbox:** issuing tickets there reaches the real operator and spends your organization's real balance.
 
 ## Quick start
+
+**SDK**
 
 ```ts
 import { FerryClient } from '@ferryvn/sdk';
@@ -66,8 +46,12 @@ const { booking } = await ferry.bookingDrafts.create({
 });
 ```
 
+The booking builder takes a voyage, seat names and passengers. It picks each passenger's ticket type by age with the operator's rules, matches prices, and checks free seats and duplicate ID numbers *before* anything is sent.
+
+**CLI**
+
 ```bash
-ferry login
+ferry login                       # paste the key (hidden); verified and stored 0600
 ferry voyages search --from "Rạch Giá" --to "Phú Quốc" --date tomorrow
 ferry seats <voyageId>
 ferry booking draft --customer 1001 --orderer-name "Nguyễn Văn A" --email a@example.com \
@@ -75,13 +59,28 @@ ferry booking draft --customer 1001 --orderer-name "Nguyễn Văn A" --email a@e
 ferry booking create --file booking.json
 ```
 
+Passenger lists come from CSV (Excel: Save As → "CSV UTF-8") or JSON; see [`examples/`](examples). Profiles keep production and UAT keys apart.
+
+**MCP**
+
 ```bash
 claude mcp add ferryvn -e FERRY_API_KEY=<key> -- npx -y @ferryvn/mcp
 ```
 
-Each package README has the full reference: [SDK](packages/sdk/README.md) · [CLI](packages/cli/README.md) · [MCP](packages/mcp/README.md).
+Claude Desktop: open `ferry-mcp.mcpb` from the [release](https://github.com/ferry-vn/ferry-sdk/releases) and enter your key. Other clients, Streamable HTTP mode and Docker: see the [MCP README](packages/mcp/README.md).
 
-## API surface
+## What moves money
+
+| Action | Effect |
+|---|---|
+| Create a booking | Charges nothing and holds no seats. The booking starts unpaid, with a payment deadline. |
+| Issue tickets (`confirmToIssue`) | Charges your organization's balance and credit (a customer shortfall is recorded as debt), then orders from the operator; automated operators can take minutes. The CLI asks for confirmation. **The MCP server never exposes it.** |
+| Retries | The API has no idempotency keys, so the SDK never retries a POST. After a network error, check `booking list` before sending again. |
+| Webhooks | Not signed and delivered once, with no retries. Put a secret token in the URL (`safeEqual`) and reconcile through the API. |
+
+MCP write tools (`create_customer`, `create_booking`, `request_cancellation`) are off unless `FERRY_MCP_ENABLE_WRITES=true`; each call is confirmed by the user, counted against a write budget and written to an audit log. Payments, ticket issuance, balances and organization administration are never available over MCP.
+
+## API coverage
 
 | Area | SDK | CLI | MCP |
 |---|---|---|---|
@@ -100,64 +99,40 @@ Each package README has the full reference: [SDK](packages/sdk/README.md) · [CL
 | Webhooks | `parseWebhook`, `safeEqual` | — | — |
 | Anything else | `ferry.request()` | `ferry api` | — |
 
-\* only with `FERRY_MCP_ENABLE_WRITES=true` (over `--http` also `FERRY_MCP_HTTP_ALLOW_WRITES=true`), and each call is confirmed by the user.
+\* only with `FERRY_MCP_ENABLE_WRITES=true` (over `--http`, also `FERRY_MCP_HTTP_ALLOW_WRITES=true`); every call is confirmed by the user.
 
 ## How the types stay correct
 
-- **Extraction:** `openapi/partner.json` is extracted from the backend source, not written by hand. `scripts/extract-openapi.ts` boots the NestJS app in preview mode, so no database is needed.
-- **Filtering:** `scripts/filter-openapi.ts` keeps the operations an API key can actually call, and corrects responses whose Swagger metadata is wrong. Corrections are marked `x-ferry-sdk-patch` and were verified in the backend code. The result is written to `openapi/sdk.json`.
-- **Generation:** types are generated from `openapi/sdk.json` with `openapi-typescript`. CI fails if the generated files are stale.
-- **Drift detection:** a nightly read-only contract suite (`contract/`) runs against UAT to catch backend drift.
+- `openapi/partner.json` is extracted from the backend source, not written by hand.
+- `scripts/filter-openapi.ts` keeps only what an API key can call and corrects responses whose Swagger metadata is wrong; each correction is verified in the backend code and marked `x-ferry-sdk-patch`. The result is `openapi/sdk.json`.
+- Types are generated from `openapi/sdk.json` with `openapi-typescript`; CI fails when they are stale.
+- A nightly read-only contract suite ([`contract/`](contract)) runs against UAT to catch backend drift.
 
-```bash
-npm run openapi:extract -- --backend ../ferry-ticket-back-end   # needs a backend checkout with node_modules
-npm run generate                                                # filter + generate types
-```
+## Tiếng Việt
 
-## Development
+Bộ công cụ chính thức để đại lý, OTA, nhân viên nội bộ và AI agent làm việc với API đối tác của Ferry VN: tra cứu chuyến tàu cao tốc của các hãng, sơ đồ ghế, giá vé, tạo và quản lý đơn.
 
-```bash
-npm ci
-npm run verify   # version check, lint, typecheck, tests + coverage, build, smoke tests, package checks
-```
+- **SDK** (`@ferryvn/sdk`): client TypeScript cho API đối tác (`/api/v1/...`), xác thực bằng header `Authorization: Bearer <key>`. Có timeout, chỉ tự retry GET, lỗi có kiểu kèm mã nghiệp vụ (`FerryErrorCode`) và `x-request-id` để tra log. **Booking builder**: chỉ cần mã chuyến, tên ghế và thông tin hành khách; SDK tự chọn loại vé theo tuổi (theo luật từng hãng), khớp giá, kiểm ghế trống và CCCD trùng *trước khi* gửi.
+- **CLI** (`ferry`): `ferry voyages search --from "Rạch Giá" --to "Phú Quốc" --date tomorrow`, `ferry seats <voyageId>`, `ferry customers --search 0901234567`. `ferry booking draft ... --passengers khach.csv` đọc danh sách hành khách từ CSV (Excel: Save As → "CSV UTF-8") hoặc JSON; `ferry booking list --output csv > don.csv` xuất cho kế toán. Hỗ trợ nhiều profile (production / UAT).
+- **MCP** (`ferry-mcp`): cho Claude Desktop / Claude Code tra cứu tuyến, chuyến, lịch chuyến, sơ đồ ghế, khách hàng, đơn hàng, sự cố thời tiết. Công cụ ghi chỉ bật khi `FERRY_MCP_ENABLE_WRITES=true` và lần ghi nào cũng phải được người dùng xác nhận. **Không bao giờ** có xuất vé, thanh toán, điều chỉnh số dư hay quản trị tổ chức.
 
-| Script | |
-|---|---|
-| `npm test`, `npm run test:coverage` | Vitest with mocked fetch, no network |
-| `npm run lint` / `lint:fix` | Biome |
-| `npm run smoke:sdk` / `smoke:cli` / `smoke:mcp` | Built SDK (ESM + CJS); CLI help; MCP over stdio, with writes, and over HTTP (including DNS-rebinding rejection) |
-| `npm run pack:check` | publint, are-the-types-wrong, `npm pack` + install + run |
-| `npm run mcpb:pack` | Claude Desktop bundle `packages/mcp/ferry-mcp.mcpb` |
-| `FERRY_UAT_API_KEY=… npm run test:contract` | live read-only checks against UAT |
+Lưu ý:
 
-Node ≥ 22.12 for development; the SDK runtime supports Node ≥ 20 (CI smoke-tests it on Node 20).
+- **API key** do quản trị viên đại lý tạo trên Dashboard, chỉ hiển thị một lần và có quyền quản trị tổ chức: chỉ dùng phía server.
+- **UAT không phải sandbox:** xuất vé trên UAT kết nối thẳng tới hãng tàu và trừ tiền thật của tài khoản đại lý.
+- **Tạo booking** không trừ tiền, không giữ ghế. **Xuất vé** (`confirmToIssue`) trừ số dư và hạn mức của tổ chức (phần khách thiếu ghi nợ, `PaidWithDebt`); CLI hỏi xác nhận, MCP không hỗ trợ.
+- **Không có idempotency key** ⇒ SDK không bao giờ tự retry POST. Lỗi mạng thì kiểm tra `booking list` trước khi gửi lại.
+- **Webhook** không ký và chỉ gửi một lần: đặt token bí mật trong URL và đối soát định kỳ qua API.
 
-## Releasing
+Tài liệu tích hợp: [docs.ferry.vn/developers](https://docs.ferry.vn/developers/).
 
-All three packages share one version.
+## Contributing, security, support
 
-```bash
-npm run version:set -- 1.0.1 && npm install   # bumps manifests, version constants, server.json, MCPB manifest
-# update CHANGELOG.md, commit, merge to main, then:
-git tag v1.0.1 && git push origin v1.0.1
-```
-
-Pushing the tag runs [`.github/workflows/release.yml`](.github/workflows/release.yml). It:
-1. runs the full CI;
-2. checks that the tag matches every package version;
-3. **only when the repository variable `NPM_PUBLISH` is `true`**, publishes `@ferryvn/sdk` → `@ferryvn/cli` → `@ferryvn/mcp` to npm (`latest`; `next` for versions with a `-`, e.g. `1.1.0-rc.1`), with provenance when the repository is public — versions already on npm are skipped, so a failed run can be re-run;
-4. creates the GitHub release (a pre-release for `-` versions) with the `.mcpb` bundle attached. While the packages are not on npm, its notes say so.
-
-Running the workflow by hand on a branch is a dry run (build, `.mcpb`, `npm pack --dry-run`). To release without pushing a tag yourself, run it by hand on `main` with `release_tag` set (e.g. `v1.0.1`): it creates the tag on that commit together with the GitHub release. npm publishing only ever runs from a tag.
-
-**GitHub first, npm later:** push the tag with `NPM_PUBLISH` unset to get only the GitHub release. When npm is ready, set `NPM_PUBLISH=true` (Settings → Secrets and variables → Actions → Variables) and run the Release workflow by hand on the tag (Actions → Release → Run workflow → `Use workflow from: Tags: vX.Y.Z`); it publishes to npm and refreshes the release notes.
-
-One-time npm setup:
-1. Create the `ferryvn` organization on npmjs.com (owns the `@ferryvn` scope).
-2. In GitHub → Settings → Environments, create the `npm` environment (optionally with required reviewers, so every publish waits for an approval).
-3. First release: create an npm **granular access token** with read and write access to the `@ferryvn` packages and store it as the `NPM_TOKEN` secret of that environment.
-4. Once the packages exist: on npmjs.com, add a trusted publisher for each package (GitHub Actions, repository `ferry-vn/ferry-sdk`, workflow `release.yml`, environment `npm`), then delete the token.
+- Development setup, the type-generation pipeline and the release process: [CONTRIBUTING.md](CONTRIBUTING.md). Changes: [CHANGELOG.md](CHANGELOG.md).
+- Maintainer docs (architecture, code standards, codebase summary, deployment, roadmap): [`docs/`](docs).
+- Vulnerabilities: report privately as described in [SECURITY.md](SECURITY.md), never in a public issue.
+- Bugs in these packages: [GitHub issues](https://github.com/ferry-vn/ferry-sdk/issues). Account, API key or booking questions: [hi@ferry.vn](mailto:hi@ferry.vn).
 
 ## License
 
-[Apache-2.0](LICENSE) © 2026 KDIGI. See [NOTICE](NOTICE).
+[Apache-2.0](LICENSE). Copyright © 2026 Ferry VN JSC. See [NOTICE](NOTICE).
